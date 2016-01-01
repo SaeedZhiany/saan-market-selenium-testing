@@ -97,6 +97,7 @@ public class Test {
         t.test1();
         t.tearDown();
 
+
         t.setUp();
         t.test2();
         t.tearDown();
