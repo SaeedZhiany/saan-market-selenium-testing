@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,8 +28,16 @@ public class Test {
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
     }
 
-    public void uiTest() throws Exception {
-            System.out.println("beginning of test");
+    /**
+     * this function test the project phase 3 specification
+     * user attempt logIn with a valid username and password
+     * search "galaxy" keyword and find "galaxy s6", then
+     * choose it to adding to cart, and finally open the cart
+     * and see the selected product
+     * @throws Exception
+     */
+    public void test1() throws Exception {
+        System.out.println("beginning of test1");
         driver.get(baseUrl + "/Home/Index");
         // log in
         System.out.println("user being login");
@@ -73,7 +79,7 @@ public class Test {
                 By.xpath(".//*[@id='cartContainer']/div[2]/div[1]/div[2]/strong/a")).getText();
         System.out.println("product in list is: " + curProductName);
         Assert.assertEquals(curProductName, selectedProductName);
-        System.out.println("test is complete successfully");
+        System.out.println("test1 is complete successfully");
 
     }
 
@@ -88,7 +94,61 @@ public class Test {
     public static void main(String[] args) throws Exception {
         Test t = new Test();
         t.setUp();
-        t.uiTest();
+        t.test1();
         t.tearDown();
+
+        t.setUp();
+        t.test2();
+        t.tearDown();
+    }
+
+    /**
+     * this function test the logIn functionality
+     * it tries to login with fake and invalid username and password
+     * and each time get an error message
+    */
+    private void test2() {
+        System.out.println("beginning of test2");
+        driver.get(baseUrl + "/Home/Index");
+        // log in
+        System.out.println("user being login");
+        driver.findElement(By.xpath(".//*[@id='loginOrRegister']/a[1]")).click();
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("tempuser2"); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("123"); // password
+        driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
+
+        String errorMessage = driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/div[1]/ul/li")).getText();
+
+        Assert.assertEquals("نام کاربری یا رمز عبور اشتباه است.", errorMessage);
+        System.out.println("user login unsuccessfully");
+
+        // try again
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).clear(); // clear username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).clear(); // clear password
+
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("tempuser2"); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("1234"); // password
+        driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
+
+        errorMessage = driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/div[1]/ul/li")).getText();
+
+        Assert.assertEquals("نام کاربری یا رمز عبور اشتباه است.", errorMessage);
+        System.out.println("user login unsuccessfully again");
+
+        // try again
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).clear(); // clear username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).clear(); // clear password
+
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("saeed"); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("1234"); // password
+        driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
+
+        errorMessage = driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/div[1]/ul/li")).getText();
+
+        Assert.assertEquals("نام کاربری یا رمز عبور اشتباه است.", errorMessage);
+        System.out.println("user login unsuccessfully again");
+
+        System.out.println("test2 is complete successfully");
+
     }
 }
