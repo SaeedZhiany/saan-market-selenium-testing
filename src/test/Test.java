@@ -1,10 +1,19 @@
 package test;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,20 +46,41 @@ public class Test {
      * @throws Exception
      */
     public void test1() throws Exception {
+        String username = "tempuser", password = "123", searchkey = "galaxy";
+        try {
+            FileInputStream inputStream = new FileInputStream(new File(".\\.\\inputData.xlsx"));
+
+            // Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+
+            // Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            Iterator<Cell> cellIterator = sheet.iterator().next().cellIterator();
+            username = cellIterator.next().getStringCellValue();
+            password = String.valueOf(((int) cellIterator.next().getNumericCellValue()));
+            System.out.println(password);
+            searchkey = cellIterator.next().getStringCellValue();
+            inputStream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("beginning of test1");
         driver.get(baseUrl + "/Home/Index");
         // log in
         System.out.println("user being login");
         driver.findElement(By.xpath(".//*[@id='loginOrRegister']/a[1]")).click();
-        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("tempuser"); // username
-        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("123"); // password
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys(username); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys(password); // password
         driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
 
-        Assert.assertEquals("tempuser", driver.findElement(By.xpath(".//*[@id='loginOrRegister']/a[1]")).getText());
+        Assert.assertEquals(username, driver.findElement(By.xpath(".//*[@id='loginOrRegister']/a[1]")).getText());
         System.out.println("user login successfully");
         // search
         System.out.println("user being search");
-        driver.findElement(By.xpath(".//*[@id='SearchString']")).sendKeys("galaxy"); // type a search key for example galaxy
+        driver.findElement(By.xpath(".//*[@id='SearchString']")).sendKeys(searchkey); // type a search key for example galaxy
         driver.findElement(By.xpath(".//*[@id='stickyNavbar']/div/div/div/div[1]/div/div/form/button")).click();
         // add to cart
         System.out.println("search page is opening");
@@ -108,13 +138,44 @@ public class Test {
      * and each time get an error message
     */
     private void test2() {
+        String username1 = "tempuser2", password1 = "123",
+                username2 = "tempuser2", password2 = "1234",
+                username3 = "saeed", password3 = "1234";
+        try {
+            FileInputStream inputStream = new FileInputStream(new File(".\\.\\inputData.xlsx"));
+
+            // Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+
+            // Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(1);
+            Iterator<Row> rowIterator = sheet.iterator();
+            Iterator<Cell> cellIterator = rowIterator.next().cellIterator();
+            username1 = cellIterator.next().getStringCellValue();
+            password1 = String.valueOf(((int) cellIterator.next().getNumericCellValue()));
+
+            cellIterator = rowIterator.next().cellIterator();
+            username2 = cellIterator.next().getStringCellValue();
+            password2 = String.valueOf(((int) cellIterator.next().getNumericCellValue()));
+
+            cellIterator = rowIterator.next().cellIterator();
+            username3 = cellIterator.next().getStringCellValue();
+            password3 = String.valueOf(cellIterator.next().getStringCellValue());
+
+            inputStream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("beginning of test2");
         driver.get(baseUrl + "/Home/Index");
         // log in
         System.out.println("user being login");
         driver.findElement(By.xpath(".//*[@id='loginOrRegister']/a[1]")).click();
-        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("tempuser2"); // username
-        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("123"); // password
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys(username1); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys(password1); // password
         driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
 
         String errorMessage = driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/div[1]/ul/li")).getText();
@@ -126,8 +187,8 @@ public class Test {
         driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).clear(); // clear username
         driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).clear(); // clear password
 
-        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("tempuser2"); // username
-        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("1234"); // password
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys(username2); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys(password2); // password
         driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
 
         errorMessage = driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/div[1]/ul/li")).getText();
@@ -139,8 +200,8 @@ public class Test {
         driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).clear(); // clear username
         driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).clear(); // clear password
 
-        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys("saeed"); // username
-        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys("1234"); // password
+        driver.findElement(By.xpath(".//*[@id='inputUsernameRegister']")).sendKeys(username3); // username
+        driver.findElement(By.xpath(".//*[@id='inputPasswordRegister']")).sendKeys(password3); // password
         driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/input")).click();      // submit login
 
         errorMessage = driver.findElement(By.xpath(".//*[@id='loginModal']/div[2]/form/div[1]/ul/li")).getText();
